@@ -1,0 +1,768 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Endisnear Studios — Horror Mod Development</title>
+<style>
+  :root{
+    --bg:#0d0c0b;
+    --bg-elevated:#17140f;
+    --bg-card:#1c1812;
+    --text:#e9e3d6;
+    --text-dim:#9c9384;
+    --accent:#7a2020;
+    --accent-bright:#a83232;
+    --border:#2b241d;
+    --shadow:rgba(0,0,0,0.6);
+  }
+  :root[data-theme="light"]{
+    --bg:#ece6d9;
+    --bg-elevated:#e0d9c8;
+    --bg-card:#e5dfd0;
+    --text:#1c1712;
+    --text-dim:#5c5346;
+    --accent:#7a2020;
+    --accent-bright:#5c1414;
+    --border:#c9bfa9;
+    --shadow:rgba(60,50,30,0.25);
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#ece6d9;
+      --bg-elevated:#e0d9c8;
+      --bg-card:#e5dfd0;
+      --text:#1c1712;
+      --text-dim:#5c5346;
+      --accent:#7a2020;
+      --accent-bright:#5c1414;
+      --border:#c9bfa9;
+      --shadow:rgba(60,50,30,0.25);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d0c0b;
+    --bg-elevated:#17140f;
+    --bg-card:#1c1812;
+    --text:#e9e3d6;
+    --text-dim:#9c9384;
+    --accent:#7a2020;
+    --accent-bright:#a83232;
+    --border:#2b241d;
+    --shadow:rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+    transition:background .3s ease, color .3s ease;
+  }
+
+  .display{
+    font-family:'Georgia','Times New Roman',serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+  }
+  .eyebrow{
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.72rem;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--accent-bright);
+  }
+  .mono-dim{
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.78rem;
+    letter-spacing:0.05em;
+    color:var(--text-dim);
+  }
+
+  a{color:inherit;}
+  a:focus-visible, button:focus-visible, summary:focus-visible{
+    outline:2px solid var(--accent-bright);
+    outline-offset:3px;
+  }
+
+  #grain{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    opacity:0.05;
+    mix-blend-mode:overlay;
+  }
+
+  .wrap{
+    max-width:900px;
+    margin:0 auto;
+    padding:0 clamp(1.25rem, 4vw, 2.5rem);
+    position:relative;
+    z-index:2;
+  }
+
+  /* NAV */
+  header.site{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1rem clamp(1.25rem, 4vw, 2.5rem);
+    max-width:900px;
+    margin:0 auto;
+  }
+  .wordmark{
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-weight:700;
+    letter-spacing:0.14em;
+    font-size:0.95rem;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:0.5rem;
+  }
+  .wordmark .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent-bright);
+    box-shadow:0 0 8px 1px var(--accent-bright);
+    flex:none;
+  }
+  .theme-toggle{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.68rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:0.4rem 0.7rem;
+    border-radius:2px;
+    cursor:pointer;
+  }
+  .theme-toggle:hover{border-color:var(--accent);color:var(--text);}
+
+  /* HERO */
+  .hero{
+    padding:clamp(4rem,12vw,7rem) 0 clamp(3rem,8vw,4.5rem);
+    border-bottom:1px solid var(--border);
+    position:relative;
+  }
+  .hero .eyebrow{margin-bottom:1rem;display:block;}
+  .hero h1{
+    font-size:clamp(2.6rem, 7vw, 4.6rem);
+    margin:0 0 1.1rem;
+    line-height:1.02;
+  }
+  .flicker{
+    animation:flicker 6s infinite;
+  }
+  @keyframes flicker{
+    0%,3%,5%,7%,42%,44%,100%{opacity:1;}
+    4%{opacity:0.4;}
+    6%{opacity:0.75;}
+    43%{opacity:0.55;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .flicker{animation:none;}
+  }
+  .hero p.lede{
+    max-width:46ch;
+    color:var(--text-dim);
+    font-size:1.05rem;
+    margin:0 0 2rem;
+  }
+  .hero-rule{
+    display:flex;
+    align-items:center;
+    gap:0.75rem;
+    color:var(--text-dim);
+  }
+  .hero-rule .line{
+    height:1px;
+    flex:1;
+    background:linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  }
+
+  /* SECTION generic */
+  section{
+    padding:clamp(3rem,8vw,4.5rem) 0;
+    border-bottom:1px solid var(--border);
+  }
+  section:last-of-type{border-bottom:none;}
+  .section-head{
+    margin-bottom:2.25rem;
+  }
+  .section-head h2{
+    font-size:clamp(1.6rem,4vw,2.1rem);
+    margin:0.4rem 0 0;
+  }
+
+  .about p{
+    max-width:62ch;
+    color:var(--text-dim);
+  }
+  .about p strong{color:var(--text);font-weight:600;}
+
+  /* TEAM / CASE FILES */
+  .files{
+    display:flex;
+    flex-direction:column;
+    gap:0.9rem;
+  }
+  .file{
+    border:1px solid var(--border);
+    background:var(--bg-card);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .file summary{
+    list-style:none;
+    cursor:pointer;
+    padding:1.1rem 1.25rem;
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    justify-content:space-between;
+  }
+  .file summary::-webkit-details-marker{display:none;}
+  .file-id{
+    display:flex;
+    align-items:baseline;
+    gap:1rem;
+    min-width:0;
+  }
+  .file-id .num{
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    color:var(--accent-bright);
+    font-size:0.78rem;
+    flex:none;
+  }
+  .file-id .names{
+    display:flex;
+    flex-direction:column;
+    gap:0.15rem;
+    min-width:0;
+  }
+  .file-id .role{
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.68rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+  }
+  .file-id .name{
+    font-size:1.15rem;
+    font-weight:600;
+  }
+  .chev{
+    flex:none;
+    width:22px;height:22px;
+    border:1px solid var(--border);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-dim);
+    transition:transform .25s ease;
+    font-size:0.8rem;
+  }
+  .file[open] .chev{transform:rotate(45deg);color:var(--accent-bright);border-color:var(--accent);}
+
+  .file-body{
+    padding:0 1.25rem 1.4rem;
+    display:grid;
+    grid-template-columns:150px 1fr;
+    gap:1.25rem;
+    align-items:start;
+  }
+  @media (max-width:560px){
+    .file-body{grid-template-columns:1fr;}
+  }
+  .photo-slot{
+    position:relative;
+    aspect-ratio:3/4;
+    border:1px dashed var(--border);
+    border-radius:2px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0.4rem;
+    color:var(--text-dim);
+    background:
+      repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--border) 60%, transparent) 8px 9px);
+    text-align:center;
+    padding:0.75rem;
+    overflow:hidden;
+  }
+  .photo-slot.has-image{
+    aspect-ratio:auto;
+    border-style:solid;
+    padding:0;
+  }
+  .photo-slot img{
+    display:none;
+    width:100%;
+    height:auto;
+    border-radius:1px;
+  }
+  .photo-slot.has-image img{
+    display:block;
+  }
+  .photo-slot .ph-label{
+    position:relative;
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.62rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .file-bio p{
+    color:var(--text-dim);
+    margin:0 0 0.6rem;
+    font-size:0.95rem;
+  }
+  .tag{
+    display:inline-block;
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.65rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--accent-bright);
+    border:1px solid var(--accent);
+    padding:0.15rem 0.5rem;
+    border-radius:2px;
+    margin-top:0.3rem;
+  }
+
+  /* PROJECTS */
+  .projects-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+    gap:1rem;
+  }
+  .project-card{
+    border:1px solid var(--border);
+    background:var(--bg-card);
+    border-radius:3px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    text-decoration:none;
+    color:inherit;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .project-card:hover{
+    border-color:var(--accent);
+    transform:translateY(-2px);
+  }
+  .project-cover{
+    position:relative;
+    aspect-ratio:16/10;
+    background:
+      repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--border) 60%, transparent) 8px 9px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--text-dim);
+    border-bottom:1px solid var(--border);
+    overflow:hidden;
+  }
+  .project-cover.has-image{
+    aspect-ratio:auto;
+  }
+  .project-cover img{
+    display:none;
+    width:100%;
+    height:auto;
+  }
+  .project-cover.has-image img{
+    display:block;
+  }
+  .project-cover .ph-label{
+    position:relative;
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.62rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    text-align:center;
+    padding:0 1rem;
+  }
+  .project-info{
+    padding:1rem 1.15rem 1.15rem;
+    display:flex;
+    flex-direction:column;
+    gap:0.35rem;
+  }
+  .project-info .status{
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.65rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent-bright);
+  }
+  .project-info .title{
+    font-size:1.15rem;
+    font-weight:600;
+  }
+  .project-info .link-out{
+    margin-top:0.4rem;
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    color:var(--text-dim);
+  }
+  .project-card:hover .link-out{color:var(--accent-bright);}
+
+  /* FOOTER / CONTACT LOG */
+  footer.site{
+    padding:clamp(3rem,8vw,4rem) 0 3rem;
+  }
+  .contact-card{
+    border:1px solid var(--border);
+    background:var(--bg-elevated);
+    border-radius:3px;
+    padding:clamp(1.5rem,4vw,2.25rem);
+  }
+  .contact-card .eyebrow{margin-bottom:0.75rem;display:block;}
+  .contact-card h2{
+    font-size:clamp(1.5rem,3.6vw,1.9rem);
+    margin:0 0 1.5rem;
+  }
+  .contact-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1.25rem;
+  }
+  @media (max-width:520px){
+    .contact-grid{grid-template-columns:1fr;}
+  }
+  .contact-item{
+    border:1px solid var(--border);
+    border-radius:2px;
+    padding:1rem 1.1rem;
+    background:var(--bg-card);
+  }
+  .contact-item .k{
+    font-family:'Consolas','SFMono-Regular',Menlo,monospace;
+    font-size:0.65rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    display:block;
+    margin-bottom:0.4rem;
+  }
+  .contact-item .v{
+    font-size:1.02rem;
+    word-break:break-word;
+  }
+  .contact-item a{
+    text-decoration:none;
+    border-bottom:1px solid var(--accent);
+    transition:color .2s ease, border-color .2s ease;
+  }
+  .contact-item a:hover{color:var(--accent-bright);border-color:var(--accent-bright);}
+  .foot-note{
+    margin-top:1.75rem;
+    color:var(--text-dim);
+    font-size:0.82rem;
+  }
+</style>
+</head>
+<body>
+<canvas id="grain"></canvas>
+
+<header class="site">
+  <div class="nav-row">
+    <div class="wordmark"><span class="dot"></span>Endisnear Studios</div>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">Lights Off</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <span class="eyebrow">Independent Horror Mod Development</span>
+    <h1 class="display flicker">We build the dread<br>you can't mod out.</h1>
+    <p class="lede">Endisnear Studios is a small crew making horror mods — new monsters, new maps, new reasons to leave the lights on. Built by people who play the games we're breaking.</p>
+    <div class="hero-rule"><span>SCROLL</span><span class="line"></span></div>
+  </section>
+
+  <section class="about">
+    <div class="section-head">
+      <span class="eyebrow">About</span>
+      <h2 class="display">Small team, unpleasant ideas.</h2>
+    </div>
+    <p>We're a handful of developers, modelers, and one composer who'd rather build the thing that scares you than just play it. Every mod that leaves this studio goes through the same test: <strong>would it make us turn the game off?</strong> If not, it goes back in the workshop.</p>
+  </section>
+
+  <section class="team" id="team">
+    <div class="section-head">
+      <span class="eyebrow">Personnel — Case Files</span>
+      <h2 class="display">The Crew</h2>
+    </div>
+
+    <div class="files">
+
+      <details class="file" open>
+        <summary>
+          <div class="file-id">
+            <span class="num">001</span>
+            <div class="names">
+              <span class="role">Lead Developer</span>
+              <span class="name">Hawer</span>
+            </div>
+          </div>
+          <span class="chev">+</span>
+        </summary>
+        <div class="file-body">
+          <div class="photo-slot">
+            <img src="images/hawer.jpg" alt="Hawer" data-base="images/hawer" data-tried="jpg" onerror="tryNextExt(this)" onload="onImgLoad(this)">
+            <span class="ph-label">Project Image<br>Goes Here</span>
+          </div>
+          <div class="file-bio">
+            <p>Runs the studio's direction and keeps the team's worst ideas alive long enough to ship. Hands-on across every system in the mod.</p>
+            <span class="tag">Lead Developer</span>
+          </div>
+        </div>
+      </details>
+
+      <details class="file">
+        <summary>
+          <div class="file-id">
+            <span class="num">002</span>
+            <div class="names">
+              <span class="role">Developer</span>
+              <span class="name">nOObVoK</span>
+            </div>
+          </div>
+          <span class="chev">+</span>
+        </summary>
+        <div class="file-body">
+          <div class="photo-slot">
+            <img src="images/noobvok.jpg" alt="nOObVoK" data-base="images/noobvok" data-tried="jpg" onerror="tryNextExt(this)" onload="onImgLoad(this)">
+            <span class="ph-label">Project Image<br>Goes Here</span>
+          </div>
+          <div class="file-bio">
+            <p>Builds and breaks the systems that make the mods actually playable — the one debugging things at 3am.</p>
+            <span class="tag">Developer</span>
+          </div>
+        </div>
+      </details>
+
+      <details class="file">
+        <summary>
+          <div class="file-id">
+            <span class="num">003</span>
+            <div class="names">
+              <span class="role">Modeler</span>
+              <span class="name">CsakVillám</span>
+            </div>
+          </div>
+          <span class="chev">+</span>
+        </summary>
+        <div class="file-body">
+          <div class="photo-slot">
+            <img src="images/csakvillam.jpg" alt="CsakVillám" data-base="images/csakvillam" data-tried="jpg" onerror="tryNextExt(this)" onload="onImgLoad(this)">
+            <span class="ph-label">Project Image<br>Goes Here</span>
+          </div>
+          <div class="file-bio">
+            <p>Sculpts the things that shouldn't exist. Responsible for a good share of what you'll wish you hadn't seen.</p>
+            <span class="tag">Modeler</span>
+          </div>
+        </div>
+      </details>
+
+      <details class="file">
+        <summary>
+          <div class="file-id">
+            <span class="num">004</span>
+            <div class="names">
+              <span class="role">Modeler</span>
+              <span class="name">icram</span>
+            </div>
+          </div>
+          <span class="chev">+</span>
+        </summary>
+        <div class="file-body">
+          <div class="photo-slot">
+            <img src="images/icram.jpg" alt="icram" data-base="images/icram" data-tried="jpg" onerror="tryNextExt(this)" onload="onImgLoad(this)">
+            <span class="ph-label">Project Image<br>Goes Here</span>
+          </div>
+          <div class="file-bio">
+            <p>Builds the environments and props that sell the scene — the details you only notice once it's too late.</p>
+            <span class="tag">Modeler</span>
+          </div>
+        </div>
+      </details>
+
+      <details class="file">
+        <summary>
+          <div class="file-id">
+            <span class="num">005</span>
+            <div class="names">
+              <span class="role">Composer</span>
+              <span class="name">Azurite</span>
+            </div>
+          </div>
+          <span class="chev">+</span>
+        </summary>
+        <div class="file-body">
+          <div class="photo-slot">
+            <img src="images/azurite.jpg" alt="Azurite" data-base="images/azurite" data-tried="jpg" onerror="tryNextExt(this)" onload="onImgLoad(this)">
+            <span class="ph-label">Project Image<br>Goes Here</span>
+          </div>
+          <div class="file-bio">
+            <p>Writes the score and sound design that gets under your skin before you even see anything.</p>
+            <span class="tag">Composer</span>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="projects" id="projects">
+    <div class="section-head">
+      <span class="eyebrow">Shipped Work</span>
+      <h2 class="display">Projects</h2>
+    </div>
+
+    <div class="projects-grid">
+      <a class="project-card" href="https://endisnearstudios.github.io/corrupted-code-site/" target="_blank" rel="noopener">
+        <div class="project-cover">
+          <img src="images/corrupted-code.jpg" alt="Corrupted Code" data-base="images/corrupted-code" data-tried="jpg" onerror="tryNextExt(this)" onload="onImgLoad(this)">
+          <span class="ph-label">Project Image<br>Goes Here</span>
+        </div>
+        <div class="project-info">
+          <span class="status">Live</span>
+          <span class="title">Corrupted Code</span>
+          <span class="link-out">endisnearstudios.github.io/corrupted-code-site →</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="contact-card">
+      <span class="eyebrow">Contact Log</span>
+      <h2 class="display">Get in touch.</h2>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <span class="k">Email</span>
+          <span class="v"><a href="mailto:endisnearstudios@gmail.com">endisnearstudios@gmail.com</a></span>
+        </div>
+        <div class="contact-item">
+          <span class="k">Discord</span>
+          <span class="v"><a href="https://discord.gg/V6t4GHgv3S" id="discordLink" target="_blank" rel="noopener">Join our server</a></span>
+        </div>
+      </div>
+      <p class="foot-note mono-dim">Â© 2026 Endisnear Studios.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Cycles an <img data-base="images/name" data-tried="jpg"> through jpg -> png -> webp
+  // until one loads; hides the image (revealing the placeholder label) if none exist.
+  var EXT_ORDER = ['jpg', 'png', 'webp'];
+  // Once an image loads, let its frame size to the image's own aspect ratio
+  // (instead of the fixed placeholder box) and hide the placeholder label.
+  function onImgLoad(img){
+    img.parentElement.classList.add('has-image');
+    img.nextElementSibling.style.display = 'none';
+  }
+  function tryNextExt(img){
+    var tried = img.getAttribute('data-tried');
+    var nextIndex = EXT_ORDER.indexOf(tried) + 1;
+    if (nextIndex >= EXT_ORDER.length){
+      img.style.display = 'none';
+      return;
+    }
+    var ext = EXT_ORDER[nextIndex];
+    img.setAttribute('data-tried', ext);
+    img.src = img.getAttribute('data-base') + '.' + ext;
+  }
+
+  // Theme toggle
+  (function(){
+    var root = document.documentElement;
+    var btn = document.getElementById('themeToggle');
+    var stored = null;
+    try { stored = localStorage.getItem('endisnear-theme'); } catch(e) {}
+    if (stored) root.setAttribute('data-theme', stored);
+
+    function current(){
+      var attr = root.getAttribute('data-theme');
+      if (attr) return attr;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function label(){
+      btn.textContent = current() === 'dark' ? 'Lights Off' : 'Lights On';
+    }
+    btn.addEventListener('click', function(){
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('endisnear-theme', next); } catch(e) {}
+      label();
+    });
+    label();
+  })();
+
+  // Accordion: only one file open at a time
+  (function(){
+    var files = document.querySelectorAll('.file');
+    files.forEach(function(f){
+      f.addEventListener('toggle', function(){
+        if (f.open){
+          files.forEach(function(other){
+            if (other !== f) other.open = false;
+          });
+        }
+      });
+    });
+  })();
+
+  // Subtle film-grain canvas
+  (function(){
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var canvas = document.getElementById('grain');
+    var ctx = canvas.getContext('2d');
+    var w, h;
+    function resize(){
+      w = canvas.width = Math.floor(window.innerWidth / 2);
+      h = canvas.height = Math.floor(window.innerHeight / 2);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function draw(){
+      var imgData = ctx.createImageData(w, h);
+      var buf = imgData.data;
+      for (var i = 0; i < buf.length; i += 4) {
+        var v = Math.random() * 255;
+        buf[i] = v; buf[i+1] = v; buf[i+2] = v; buf[i+3] = 255;
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+    draw();
+    if (!reduce){
+      setInterval(draw, 120);
+    }
+  })();
+</script>
+
+</body>
+</html>
